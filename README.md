@@ -21,13 +21,13 @@
 <!-- TOC end -->
 
 <!-- TOC --><a name="overview"></a>
->>>>>>> bedf0327cbe2fd0bce14ef9dbc4ccaa09d793f14
+
 ## Overview
 
 This Repo will have Useful implementation for some  Enhancement , Restoration  Operations and also Some filters.
 
 
-<<<<<<< HEAD
+
 ## Enhancement Operations
 =======
 <!-- TOC --><a name="enhancement-operations"></a>
@@ -39,8 +39,7 @@ his there types
 2. Pixel Operations
 3. Neighbor Operations
 
-<<<<<<< HEAD
-![[Pasted image 20230410130158.png]]
+
 
 ### Geometry Operations
 Change pixel location
@@ -55,7 +54,7 @@ Change pixel location
 
 <!-- TOC --><a name="resize-operation-using-4-alagorithm-"></a>
 ### Resize Operation using 4 alagorithm :
->>>>>>> bedf0327cbe2fd0bce14ef9dbc4ccaa09d793f14
+
 	1. Direct Mapping:
 		1. 0- Order
 		2. 1- Order
@@ -68,7 +67,7 @@ Change pixel location
 ![[Pasted image 20230410131019.png]]
 =======
 ![image](https://user-images.githubusercontent.com/83607474/230892187-7f949b8c-3396-466b-919f-f5ecab947572.png)
->>>>>>> bedf0327cbe2fd0bce14ef9dbc4ccaa09d793f14
+
 
 
 
