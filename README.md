@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Image Processing using python
 
 - [[#Overview|Overview]]
