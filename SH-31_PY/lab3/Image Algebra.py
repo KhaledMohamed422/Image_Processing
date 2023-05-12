@@ -11,13 +11,27 @@ def Image_Negative(img):
     img = 255 - img          
     return img
 
-def Quantization(img, bit_size=8):
-    gray_level = 2**bit_size
-    gap = 256 / gray_level
-    colors = np.arange(gap, 256, gap)
-    index = np.floor(img / gap).astype(int)
+def reduce_gray_levels(img, gray_levels):
+    '''Quantization'''
+    # Calculate gap between gray levels
+    gap = 256 // gray_levels
+    
+    # Generate array of colors
+    colors = np.arange(0, 256, gap)
+    
+    # Convert image to float for calculations
+    img = img.astype(np.float32)
+    
+    # Apply gray level reduction
+    temp = img / gap
+    index = np.floor(temp).astype(np.int32)
     new_img = colors[index]
-    return new_img.astype('uint8')
+    
+    # Convert image back to uint8 for display
+    new_img = new_img.astype(np.uint8)
+    
+    return new_img
+
 
 def add_image(source_img, op_img):
     try:
