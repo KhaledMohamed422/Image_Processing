@@ -1,12 +1,4 @@
 
-# Image Processing using python
-
-- [[#Overview|Overview]]
-- [[#Enhancement Operations|Enhancement Operations]]
-	- [[#Enhancement Operations#Geometry Operations|Geometry Operations]]
-
-
-=======
 <!-- TOC --><a name="image-processing-using-python"></a>
 # Image Processing using python
 
