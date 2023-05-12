@@ -21,10 +21,10 @@ This Repo will have Useful implementation for some Â Enhancement , Restoration Â
 
 
 ## Enhancement Operations
-=======
+
 <!-- TOC --><a name="enhancement-operations"></a>
 # Enhancement Operations
->>>>>>> bedf0327cbe2fd0bce14ef9dbc4ccaa09d793f14
+
 his there types
 
 1. Geometry Operations
