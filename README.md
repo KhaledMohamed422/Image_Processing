@@ -37,7 +37,7 @@ his there types
 Change pixel location
 
 Resize Operation using 4 alagorithm :
-=======
+
 ![image](https://user-images.githubusercontent.com/83607474/230892268-b909b1d9-cff6-471d-aeca-9dc8a5618944.png)
 
 <!-- TOC --><a name="geometry-operations"></a>
@@ -55,9 +55,9 @@ Change pixel location
 		2. 1- Order
 
 
-<<<<<<< HEAD
+
 ![[Pasted image 20230410131019.png]]
-=======
+
 ![image](https://user-images.githubusercontent.com/83607474/230892187-7f949b8c-3396-466b-919f-f5ecab947572.png)
 
 
