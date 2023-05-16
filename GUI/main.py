@@ -41,7 +41,8 @@ class App(ctk.CTk):
             'invert': ctk.BooleanVar(value=INVERT_DEFAULT),
             'hist_eq' : ctk.BooleanVar(value=False),
             'gamma' : ctk.DoubleVar(value=1),
-            'histogram_equalization': ctk.BooleanVar(value=False)
+            'histogram_equalization': ctk.BooleanVar(value=False),
+            'hist_match_image_path' : ctk.StringVar(value='')
         }
         
         self.tab3_vars = {
@@ -121,6 +122,7 @@ class App(ctk.CTk):
 
         self.place_image()
         # place image
+    
     def place_image(self):
         self.image_output.delete('all')
         resized_image = self.image.resize((self.image_width, self.image_height))

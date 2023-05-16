@@ -37,6 +37,7 @@ class Tab2Frame(ctk.CTkFrame):
         SwitchPanel(self, (tab_vars['grayscale'], 'B/W'), (tab_vars['invert'], 'invert'), (tab_vars['histogram_equalization'], 'hist'))
         SliderPanel(self, 'Brightness Offset', tab_vars['brightness'], 0, 100, lambda:process_func('Brightness'))
         SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 1, 5, lambda:process_func('power_trans'))
+        ImagChooser(self, tab_vars['hist_match_image_path'], lambda:process_func('hist_match'))
 
 class Tab3Frame(ctk.CTkFrame):
     def __init__(self, parent, tab_vars, process_func):
