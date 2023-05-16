@@ -2,7 +2,7 @@ import customtkinter as ctk
 from image_widgets import *
 from PIL import Image, ImageTk
 from menu import Menu
-from algorithms import adjust_brightness_optimized, cvt2gray_luminance, histogram_equalization, Power_Law_Transformations , Smoothing_Weighted_Filter,Edge_Detection,Sharpening_Filter,reduce_gray_levels
+from algorithms import adjust_brightness_optimized, cvt2gray_luminance, histogram_equalization, Power_Law_Transformations , Smoothing_Weighted_Filter,Edge_Detection,Sharpening_Filter,reduce_gray_levels, image_negative, histogram_matching
 
 class App(ctk.CTk):
     def __init__(self):
@@ -31,18 +31,17 @@ class App(ctk.CTk):
 
     def init_parameters(self):
         self.tab1_vars = {
-            'rotate': ctk.DoubleVar(value=ROTATE_DEFAULT),
-            'flip': ctk.StringVar(value=FLIP_OPTIONS)
+            'grayscale': ctk.BooleanVar(value=GRAYSCALE_DEFAULT),
+            'invert': ctk.BooleanVar(value=INVERT_DEFAULT),
+            'histogram_equalization': ctk.BooleanVar(value=False),
+            'brightness': ctk.IntVar(value=BRIGHTNESS_DEFAULT),
+            'gamma' : ctk.DoubleVar(value=1),
+            'hist_match_image_path' : ctk.StringVar(value=''),
+            'insert_image_path' : ctk.StringVar(value=''),
+            'subtract_image_path' : ctk.StringVar(value='')
         }
         
         self.tab2_vars = {
-            'brightness': ctk.IntVar(value=BRIGHTNESS_DEFAULT),
-            'grayscale': ctk.BooleanVar(value=GRAYSCALE_DEFAULT),
-            'invert': ctk.BooleanVar(value=INVERT_DEFAULT),
-            'hist_eq' : ctk.BooleanVar(value=False),
-            'gamma' : ctk.DoubleVar(value=1),
-            'histogram_equalization': ctk.BooleanVar(value=False),
-            'hist_match_image_path' : ctk.StringVar(value='')
         }
         
         self.tab3_vars = {
@@ -54,9 +53,11 @@ class App(ctk.CTk):
             # 'effect' : ctk.StringVar(value=VIBRANCE_DEFAULT)
         }
 
-        self.tab1_vars['flip'].trace('w',self.process)
-        self.tab2_vars['grayscale'].trace('w', lambda*args: self.process('B/W'))
-        self.tab2_vars['histogram_equalization'].trace('w', lambda *args: self.process('hist'))
+        # self.tab1_vars['flip'].trace('w',self.process)
+        # tab1
+        self.tab1_vars['grayscale'].trace('w', lambda*args: self.process('B/W'))
+        self.tab1_vars['invert'].trace('w', lambda*args: self.process('invert'))
+        self.tab1_vars['histogram_equalization'].trace('w', lambda *args: self.process('hist'))
 
         #tab3
         self.tab3_vars['edge_det'].trace('w', lambda *args: self.process('Edge'))
@@ -69,19 +70,26 @@ class App(ctk.CTk):
         
         match processing_func:
             case 'B/W':
-                if self.tab2_vars['grayscale'].get() == True:
+                if self.tab1_vars['grayscale'].get() == True:
                     self.image = cvt2gray_luminance(self.image)
                 else:
                     self.image = self.original
-            case 'Brightness':
-                self.image = adjust_brightness_optimized(self.image, self.tab2_vars['brightness'].get())
+            case 'invert':
+                if self.tab1_vars['invert'].get() == True:
+                    self.image = image_negative(self.image)
+                else:
+                    self.image = self.original
             case 'hist':
-                if self.tab2_vars['histogram_equalization'].get() == True:
+                if self.tab1_vars['histogram_equalization'].get() == True:
                     self.image = histogram_equalization(self.image)
                 else:
                     self.image = self.original
+            case 'Brightness':
+                self.image = adjust_brightness_optimized(self.image, self.tab1_vars['brightness'].get())
             case 'power_trans':
-                self.image = Power_Law_Transformations(self.image, self.tab2_vars['gamma'].get())
+                self.image = Power_Law_Transformations(self.image, self.tab1_vars['gamma'].get())
+            case 'hist_match':
+                self.image = histogram_matching(self.image, self.tab1_vars['hist_match_image_path'].get())
             case 'blur':
                 self.image = Smoothing_Weighted_Filter(self.image, self.tab3_vars['blur'].get())
             case 'Edge':
@@ -99,14 +107,14 @@ class App(ctk.CTk):
 
 
         
-        self.image = self.image.rotate(self.tab1_vars['rotate'].get())
+        #self.image = self.image.rotate(self.tab1_vars['rotate'].get())
 
-        if self.tab1_vars['flip'].get() == 'X':
-            print('X')
-        elif self.tab1_vars['flip'].get() == 'Y':
-            print('Y')
-        elif self.tab1_vars['flip'].get() == 'Both':
-            print('Both')
+        # if self.tab1_vars['flip'].get() == 'X':
+        #     print('X')
+        # elif self.tab1_vars['flip'].get() == 'Y':
+        #     print('Y')
+        # elif self.tab1_vars['flip'].get() == 'Both':
+        #     print('Both')
             
         self.place_image()
 

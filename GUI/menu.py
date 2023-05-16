@@ -23,21 +23,22 @@ class Tab1Frame(ctk.CTkFrame):
         super().__init__(master = parent, fg_color = 'transparent')
         self.pack(expand = True, fill = 'both')
         
-        SliderPanel(self, 'Position', tab_vars['rotate'], 0, 360, lambda:process_func('here'))
-        SegmentPanel(self, 'Some Option' , tab_vars['flip'], FLIP_OPTIONS)
-        RevertButton(self,
-                (tab_vars['rotate'], ROTATE_DEFAULT),
-                (tab_vars['flip'], FLIP_OPTIONS[0]))
+        SwitchPanel(self, (tab_vars['grayscale'], 'B/W'), (tab_vars['invert'], 'invert'))
+        SwitchPanel(self, (tab_vars['histogram_equalization'], 'Histogram Equalization'))
+        SliderPanel(self, 'Brightness Offset', tab_vars['brightness'], 0, 100, lambda:process_func('Brightness'))
+        SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 1, 5, lambda:process_func('power_trans'))
+        ImageChooser(self, "Histogram Matching",tab_vars['hist_match_image_path'], lambda:process_func('hist_match'))
+        ImageChooser(self, "Insert Image",tab_vars['insert_image_path'], lambda:process_func('insert_image'))
+        #ImageChooser(self, "Subtract Image",tab_vars['subtract_image_path'], lambda:process_func('subtract_image'))
+        #SegmentPanel(self, 'Some Option' , tab_vars['flip'], FLIP_OPTIONS)
+        #RevertButton(self,
+                #(tab_vars['rotate'], ROTATE_DEFAULT),
+                #(tab_vars['flip'], FLIP_OPTIONS[0]))
 
 class Tab2Frame(ctk.CTkFrame):
     def __init__(self, parent, tab_vars, process_func):
         super().__init__(master = parent, fg_color = 'transparent')
         self.pack(expand = True, fill = 'both')
-
-        SwitchPanel(self, (tab_vars['grayscale'], 'B/W'), (tab_vars['invert'], 'invert'), (tab_vars['histogram_equalization'], 'hist'))
-        SliderPanel(self, 'Brightness Offset', tab_vars['brightness'], 0, 100, lambda:process_func('Brightness'))
-        SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 1, 5, lambda:process_func('power_trans'))
-        ImagChooser(self, tab_vars['hist_match_image_path'], lambda:process_func('hist_match'))
 
 class Tab3Frame(ctk.CTkFrame):
     def __init__(self, parent, tab_vars, process_func):

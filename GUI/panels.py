@@ -137,30 +137,44 @@ class FilePathPanel(Panel):
     def open_file_dialog(self):
         self.path_string.set(filedialog.askdirectory())
 
-class ImagChooser(Panel):
-    def __init__(self, parent, path_string, func):
-        super().__init__(parent = parent)
+class ImageChooser(Panel):
+    def __init__(self, parent, text, path_string, func):
+        super().__init__(parent=parent)
         
         self.path_string = path_string
         self.path_string.trace('w', self.update_text)
         
-        ctk.CTkButton(self, text = 'Choose Image', command = self.open_file_dialog).pack(pady = 5)
-        self.output = ctk.CTkLabel(self, text = '')
-        self.output.pack()
-        self.apply_button = ctk.CTkButton(self, text = "Apply", command = func)
-
-    def open_file_dialog(self):
-        self.path_string.set(filedialog.askopenfile(filetypes=(("jpeg, png, jpg", "*.jpg *.png *.jpeg"),("png files", "*.png"), ("jpg files", "*.jpg"), ("jpeg files", "*.jpeg"))).name)
+        ctk.CTkLabel(self, text=text).pack()
+        ctk.CTkButton(self, text='Choose Image', command=self.open_file_dialog).pack(pady=5)
         
+        self.output = ctk.CTkLabel(self, text='')
+        self.output.pack()
+        
+        self.apply_button = ctk.CTkButton(self, text="Apply", command=func)
+    
+    def open_file_dialog(self):
+        filetypes = (("jpeg, png, jpg", "*.jpg *.png *.jpeg"),
+                     ("png files", "*.png"),
+                     ("jpg files", "*.jpg"),
+                     ("jpeg files", "*.jpeg"))
+        
+        file_path = filedialog.askopenfilename(filetypes=filetypes)
+        
+        if file_path:
+            self.path_string.set(file_path)
+    
     def update_text(self, *args):
-        if self.path_string.get():
-            text = basename(self.path_string.get())
-            self.output.configure(text = text)
-            print(text)
-            if text != "None":
+        file_path = self.path_string.get()
+        
+        if file_path:
+            file_name = basename(file_path)
+            self.output.configure(text=file_name)
+            
+            if file_name != "None":
                 self.apply_button.pack()
             else:
                 self.apply_button.pack_forget()
+
 
 class SaveButton(ctk.CTkButton):
     def __init__(self, parent, export_image, name_string, format_string, path_string):
