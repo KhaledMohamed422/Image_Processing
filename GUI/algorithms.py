@@ -25,6 +25,17 @@ def cvt2gray_luminance(img):
     img_out = Image.fromarray(cv.cvtColor(gray_img, cv.COLOR_BGR2RGB))
     return img_out
 
+def image_negative(img):
+    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
+    img_out = img.copy()
+    # rows, cols, channels = img.shape
+    # for ch in range(channels):
+    #     for r in range(rows):
+    #         for c in range(cols):
+    img_out = 255 - img
+    img_out = Image.fromarray(cv.cvtColor(img_out, cv.COLOR_BGR2RGB))
+    return img_out
+
 def histogram_equalization(img):
     img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
     # cv.imshow('org', img)
@@ -55,6 +66,36 @@ def histogram_equalization(img):
 
     img_out = Image.fromarray(cv.cvtColor(img_out, cv.COLOR_BGR2RGB))
     return img_out
+
+def get_histogram(img):
+    hist, bins = np.histogram(img.flatten(), 256, [0, 256])
+
+    # Compute the cumulative distribution function
+    cdf = hist.cumsum()
+    return np.round((cdf / cdf.max()) * 255)
+
+def histogram_matching(src_img, ref_img_path):
+    src_img = cv.cvtColor(np.array(src_img), cv.COLOR_RGB2BGR)
+    ref_img = cv.imread(ref_img_path)
+    
+    hist1 =  get_histogram(src_img)
+    hist2 = get_histogram(ref_img)
+
+    rows, cols = src_img.shape[:2]
+
+    colors = np.zeros(256, dtype=np.uint8)
+
+    for i in range(len(colors)):
+        diffs = np.abs(hist1[i] - hist2)
+        min_idx = np.argmin(diffs)
+        colors[i] = min_idx
+    
+    for r in range(rows):
+        for c in range(cols):
+            src_img[r,c] = colors[src_img[r,c]]
+
+    src_img = Image.fromarray(cv.cvtColor(src_img, cv.COLOR_BGR2RGB))
+    return src_img
 
 def Contrast(img,new_min,new_max):
    
