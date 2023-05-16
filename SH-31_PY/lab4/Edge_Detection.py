@@ -10,12 +10,12 @@ from math import floor
 img = cv.imread('img/2.jpeg')
 
 
-def Edge_Detection(img):
+def Edge_Detection(img,s):
     #converte img to gray level. 
     img = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
     
     #set size of the mask
-    mask_size = 3
+    mask_size = s
     
     # formula for choice the padding size knowing the mask size 
     padded_s = floor(mask_size / 2)  

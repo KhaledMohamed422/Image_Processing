@@ -32,6 +32,33 @@ class SliderPanel(Panel):
     def update_text(self,*args):
         self.num_label.configure(text = f'{round(self.data_var.get(), 2)}')
 
+class SliderPanel_filter(Panel):
+    def __init__(self, parent, text, data_var,  min_value, max_value, func,step):
+        super().__init__(parent = parent)
+
+        # layout 
+        self.rowconfigure((0,1,2), weight = 1)
+        self.columnconfigure((0,1), weight = 1)
+
+        self.data_var = data_var
+        self.data_var.trace('w', self.update_text)
+
+        ctk.CTkLabel(self, text = text).grid(column = 0, row = 0, sticky = 'W', padx = 5)
+        self.num_label = ctk.CTkLabel(self, text = data_var.get())
+        self.num_label.grid(column = 1, row = 0, sticky = 'E', padx = 5)
+        ctk.CTkSlider(self,
+                fg_color = SLIDER_BG,
+                variable = self.data_var, 
+                from_ = min_value,
+                to = max_value,
+                number_of_steps=step).grid(row = 1, column = 0, columnspan = 2, sticky = 'ew', padx = 5, pady = 5)
+        self.apply_button = ctk.CTkButton(self, text = "Apply", command = func)
+        self.apply_button.grid(column = 0, columnspan = 2, row = 2)
+
+    def update_text(self,*args):
+        self.num_label.configure(text = f'{round(self.data_var.get(), 2)}')
+
+
 class SegmentPanel(Panel):
     def __init__(self, parent, text, data_vars, options):
         super().__init__(parent = parent)

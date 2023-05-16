@@ -2,7 +2,7 @@ import customtkinter as ctk
 from image_widgets import *
 from PIL import Image, ImageTk
 from menu import Menu
-from algorithms import adjust_brightness_optimized, cvt2gray_luminance, histogram_equalization, Power_Law_Transformations
+from algorithms import adjust_brightness_optimized, cvt2gray_luminance, histogram_equalization, Power_Law_Transformations , Smoothing_Weighted_Filter,Edge_Detection,Sharpening_Filter,reduce_gray_levels
 
 class App(ctk.CTk):
     def __init__(self):
@@ -45,15 +45,22 @@ class App(ctk.CTk):
         }
         
         self.tab3_vars = {
-            'blur': ctk.DoubleVar(value=BLUR_DEFAULT),
-            'contrast': ctk.IntVar(value=CONTRAST_DEFAULT),
-            'effect' : ctk.StringVar(value=VIBRANCE_DEFAULT)
+            'reduce': ctk.IntVar(value=0),
+            'blur': ctk.IntVar(value=0),
+            'Sharp': ctk.BooleanVar(value=False),
+            'edge_det': ctk.BooleanVar(value=False),
+            # 'contrast': ctk.IntVar(value=CONTRAST_DEFAULT),
+            # 'effect' : ctk.StringVar(value=VIBRANCE_DEFAULT)
         }
 
         self.tab1_vars['flip'].trace('w',self.process)
         self.tab2_vars['grayscale'].trace('w', lambda*args: self.process('B/W'))
         self.tab2_vars['histogram_equalization'].trace('w', lambda *args: self.process('hist'))
 
+        #tab3
+        self.tab3_vars['edge_det'].trace('w', lambda *args: self.process('Edge'))
+        self.tab3_vars['Sharp'].trace('w', lambda *args: self.process('Sharp'))
+        
     def process(self, *args):
         self.image = self.original
         print(args)
@@ -74,6 +81,20 @@ class App(ctk.CTk):
                     self.image = self.original
             case 'power_trans':
                 self.image = Power_Law_Transformations(self.image, self.tab2_vars['gamma'].get())
+            case 'blur':
+                self.image = Smoothing_Weighted_Filter(self.image, self.tab3_vars['blur'].get())
+            case 'Edge':
+                    if self.tab3_vars['edge_det'].get() == True:
+                        self.image = Edge_Detection(self.image)
+                    else:
+                         self.image = self.original
+            case 'Sharp':
+                    if self.tab3_vars['Sharp'].get() == True:
+                        self.image = Sharpening_Filter(self.image)
+                    else:
+                         self.image = self.original
+            case 'reduce':
+                 self.image = reduce_gray_levels(self.image, self.tab3_vars['reduce'].get())            
 
 
         

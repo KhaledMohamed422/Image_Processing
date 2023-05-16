@@ -43,9 +43,12 @@ class Tab3Frame(ctk.CTkFrame):
         super().__init__(master = parent, fg_color = 'transparent')
         self.pack(expand = True, fill = 'both')
         
-        DropDownPanel(self, tab_vars['effect'], EFFECT_OPTIONS)
-        SliderPanel(self, 'Blur', tab_vars['blur'], 1, 5, process_func)
-        SliderPanel(self, 'Contrast', tab_vars['contrast'], 1, 10, process_func)
+        # DropDownPanel(self, tab_vars['effect'], EFFECT_OPTIONS)
+        SwitchPanel(self, (tab_vars['edge_det'], 'Edge'),( (tab_vars['Sharp'], 'Sharp')))
+        SliderPanel_filter(self, 'Smoothing Filter', tab_vars['blur'],1,7,lambda: process_func('blur'),step=3)
+        SliderPanel(self, 'Reduce Size', tab_vars['reduce'],1,7,lambda: process_func('reduce'))
+
+        # SliderPanel(self, 'Contrast', tab_vars['contrast'], 1, 10, process_func)
 
 class ExportFrame(ctk.CTkFrame):
     def __init__(self, parent, export_image):
