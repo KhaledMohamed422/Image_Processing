@@ -34,7 +34,7 @@ class Tab2Frame(ctk.CTkFrame):
         super().__init__(master = parent, fg_color = 'transparent')
         self.pack(expand = True, fill = 'both')
 
-        SwitchPanel(self, (tab_vars['grayscale'], 'B/W'), (tab_vars['invert'], 'invert'))
+        SwitchPanel(self, (tab_vars['grayscale'], 'B/W'), (tab_vars['invert'], 'invert'), (tab_vars['histogram_equalization'], 'hist'))
         SliderPanel(self, 'Brightness Offset', tab_vars['brightness'], 0, 100, lambda:process_func('Brightness'))
         SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 1, 5, lambda:process_func('power_trans'))
 
