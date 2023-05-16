@@ -11,7 +11,7 @@ class ImageImport(ctk.CTkFrame):
         ctk.CTkButton(self, text = 'open image', command = self.open_dialog).pack(expand = True)
 
     def open_dialog(self):
-        path = filedialog.askopenfile().name
+        path = filedialog.askopenfile(filetypes=(("jpeg, png, jpg", "*.jpg *.png *.jpeg"),("png files", "*.png"), ("jpg files", "*.jpg"), ("jpeg files", "*.jpeg"))).name
         self.import_func(path)
 
 class ImageOutput(Canvas):
