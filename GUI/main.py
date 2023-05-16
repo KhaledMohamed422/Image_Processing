@@ -2,7 +2,7 @@ import customtkinter as ctk
 from image_widgets import *
 from PIL import Image, ImageTk
 from menu import Menu
-from algorithms import adjust_brightness_optimized, cvt2gray_luminance
+from algorithms import adjust_brightness_optimized, cvt2gray_luminance, histogram_equalization, Power_Law_Transformations
 
 class App(ctk.CTk):
     def __init__(self):
@@ -40,7 +40,8 @@ class App(ctk.CTk):
             'grayscale': ctk.BooleanVar(value=GRAYSCALE_DEFAULT),
             'invert': ctk.BooleanVar(value=INVERT_DEFAULT),
             'hist_eq' : ctk.BooleanVar(value=False),
-            'gamma' : ctk.DoubleVar(value=GAMMA_DEFAULT)
+            'gamma' : ctk.DoubleVar(value=1),
+            'histogram_equalization': ctk.BooleanVar(value=False)
         }
         
         self.tab3_vars = {
@@ -51,6 +52,7 @@ class App(ctk.CTk):
 
         self.tab1_vars['flip'].trace('w',self.process)
         self.tab2_vars['grayscale'].trace('w', lambda*args: self.process('B/W'))
+        self.tab2_vars['histogram_equalization'].trace('w', lambda *args: self.process('hist'))
 
     def process(self, *args):
         self.image = self.original
@@ -65,8 +67,15 @@ class App(ctk.CTk):
                     self.image = self.original
             case 'Brightness':
                 self.image = adjust_brightness_optimized(self.image, self.tab2_vars['brightness'].get())
+            case 'hist':
+                if self.tab2_vars['histogram_equalization'].get() == True:
+                    self.image = histogram_equalization(self.image)
+                else:
+                    self.image = self.original
             case 'power_trans':
-                pass
+                self.image = Power_Law_Transformations(self.image, self.tab2_vars['gamma'].get())
+
+
         
         self.image = self.image.rotate(self.tab1_vars['rotate'].get())
 
