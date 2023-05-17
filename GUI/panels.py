@@ -28,7 +28,7 @@ class SliderPanel(Panel):
                 from_ = min_value,
                 to = max_value).grid(row = 1, column = 0, columnspan = 2, sticky = 'ew', padx = 5, pady = 5)
         self.apply_button = ctk.CTkButton(self, text = "Apply", command = func)
-        self.apply_button.grid(column = 0, columnspan = 2, row = 2)
+        self.apply_button.grid(column = 0, columnspan = 2, row = 2, sticky='ew')
 
     def update_text(self,*args):
         self.num_label.configure(text = f'{round(self.data_var.get(), 2)}')
@@ -58,8 +58,38 @@ class SliderPanel_filter(Panel):
 
     def update_text(self,*args):
         self.num_label.configure(text = f'{round(self.data_var.get(), 2)}')
+        
+class OneEntryPanel(Panel):
+    def __init__(self, parent, maintext, text1, var1, func):
+        super().__init__(parent = parent)
+        
+        self.rowconfigure((0,1,2), weight = 1)
+        self.columnconfigure((0,1), weight = 1)
+        
+        ctk.CTkLabel(self, text = maintext).grid(column = 0, row = 0, columnspan = 2, padx = 5, sticky = "W")
+        
+        ctk.CTkLabel(self, text = text1).grid(column = 0, row = 1, sticky = 'W', padx = 5)
+        ctk.CTkEntry(self, textvariable = var1).grid(column = 1, row = 1, sticky='E')
+        self.apply_button = ctk.CTkButton(self, text = "Apply", command = func)
+        self.apply_button.grid(column = 0, columnspan = 2, row = 2, sticky='ew')
 
+class TwoEntryPanel(Panel): 
+    def __init__(self, parent, maintext, text1, text2, var1, var2, func):
+        super().__init__(parent = parent)
+        
+        self.rowconfigure((0,1,2,3), weight = 1)
+        self.columnconfigure((0,1), weight = 1)
+        
+        ctk.CTkLabel(self, text = maintext).grid(column = 0, row = 0, columnspan = 2, sticky = 'W', padx = 5)
+        
+        ctk.CTkLabel(self, text = text1).grid(column = 0, row = 1, sticky = 'W', padx = 5)
+        ctk.CTkLabel(self, text = text2).grid(column = 1, row = 1, sticky = 'W', padx = 5)
 
+        ctk.CTkEntry(self, textvariable = var1).grid(column = 0, row = 2)
+        ctk.CTkEntry(self, textvariable = var2).grid(column = 1, row = 2)
+        self.apply_button = ctk.CTkButton(self, text = "Apply", command = func)
+        self.apply_button.grid(column = 0, columnspan = 2, row = 3, sticky='ew')
+        
 class SegmentPanel(Panel):
     def __init__(self, parent, text, data_vars, options):
         super().__init__(parent = parent)
@@ -138,9 +168,9 @@ class FilePathPanel(Panel):
         self.path_string.set(filedialog.askdirectory())
 
 class ImageChooser(Panel):
-    def __init__(self, parent, text, path_string, func):
+    def __init__(self, text, parent, path_string, func):
         super().__init__(parent=parent)
-        
+         
         self.path_string = path_string
         self.path_string.trace('w', self.update_text)
         
@@ -175,7 +205,57 @@ class ImageChooser(Panel):
             else:
                 self.apply_button.pack_forget()
 
+class ImageChooserWithDrop(Panel):
+    def __init__(self, parent, path_string, options, func):
+        super().__init__(parent=parent)
+        
+        self.path_string = path_string
+        self.path_string.trace('w', self.update_text)
+        
+        self.main_func = func
+        self.func = lambda:self.main_func(str(options[0]))
+        self.options = options
+        
+        self.drop_chooser_string = ctk.StringVar(master=self, value='Histogram Matching')
+        self.drop_chooser_string.trace('w', self.choose) 
 
+        DropDownPanel(self, self.drop_chooser_string, options=options)
+        ctk.CTkButton(self, text='Choose Image', command=self.open_file_dialog).pack(pady=5)
+        
+        self.output = ctk.CTkLabel(self, text='')
+        self.output.pack()
+        
+        self.apply_button = ctk.CTkButton(self, text="Apply", command=self.func)
+        
+    def choose(self, *args):
+        selected_option = self.drop_chooser_string.get()
+        self.func = lambda: self.main_func(str(selected_option))
+        self.apply_button.configure(command = self.func)
+    
+    def open_file_dialog(self):
+        filetypes = (("jpeg, png, jpg", "*.jpg *.png *.jpeg"),
+                     ("png files", "*.png"),
+                     ("jpg files", "*.jpg"),
+                     ("jpeg files", "*.jpeg"))
+        
+        file_path = filedialog.askopenfilename(filetypes=filetypes)
+        
+        if file_path:
+            self.path_string.set(file_path)
+    
+    def update_text(self, *args):
+        file_path = self.path_string.get()
+        
+        if file_path:
+            file_name = basename(file_path)
+            self.output.configure(text=file_name)
+            
+            if file_name != "None":
+                self.apply_button.pack()
+            else:
+                self.apply_button.pack_forget()
+
+        
 class SaveButton(ctk.CTkButton):
     def __init__(self, parent, export_image, name_string, format_string, path_string):
         super().__init__(master = parent, text = 'Save', command = self.save)

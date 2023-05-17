@@ -28,19 +28,12 @@ def cvt2gray_luminance(img):
 def image_negative(img):
     img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
     img_out = img.copy()
-    # rows, cols, channels = img.shape
-    # for ch in range(channels):
-    #     for r in range(rows):
-    #         for c in range(cols):
     img_out = 255 - img
     img_out = Image.fromarray(cv.cvtColor(img_out, cv.COLOR_BGR2RGB))
     return img_out
 
 def histogram_equalization(img):
     img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
-    # cv.imshow('org', img)
-    # cv.waitkey(0)
-    print('hellow')
     img_out = img.copy()
     rows, cols, channels = img.shape
 

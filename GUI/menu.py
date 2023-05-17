@@ -22,25 +22,22 @@ class Menu(ctk.CTkTabview):
 
 class Tab1Frame(ctk.CTkFrame):
     def __init__(self, parent, tab_vars, process_func):
-        super().__init__(master = parent, fg_color = 'transparent')
-        self.pack(expand = True, fill = 'both')
+        super().__init__(master=parent, fg_color='transparent')
+        self.pack(expand=True, fill='both')
         
         SwitchPanel(self, (tab_vars['grayscale'], 'B/W'), (tab_vars['invert'], 'invert'))
         SwitchPanel(self, (tab_vars['histogram_equalization'], 'Histogram Equalization'))
-        SliderPanel(self, 'Brightness Offset', tab_vars['brightness'], 0, 100, lambda:process_func('Brightness'))
-        SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 1, 5, lambda:process_func('power_trans'))
-        ImageChooser(self, "Histogram Matching",tab_vars['hist_match_image_path'], lambda:process_func('hist_match'))
-        ImageChooser(self, "Insert Image",tab_vars['insert_image_path'], lambda:process_func('insert_image'))
-        #ImageChooser(self, "Subtract Image",tab_vars['subtract_image_path'], lambda:process_func('subtract_image'))
-        #SegmentPanel(self, 'Some Option' , tab_vars['flip'], FLIP_OPTIONS)
-        #RevertButton(self,
-                #(tab_vars['rotate'], ROTATE_DEFAULT),
-                #(tab_vars['flip'], FLIP_OPTIONS[0]))
+        SliderPanel(self, 'Brightness Offset', tab_vars['brightness'], 0, 100, lambda: process_func('Brightness'))
+        SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 1, 5, lambda: process_func('power_trans')) 
+        ImageChooserWithDrop(self, tab_vars['image_path'], tab_vars['drop_options'], process_func)
 
 class Tab2Frame(ctk.CTkFrame):
     def __init__(self, parent, tab_vars, process_func):
         super().__init__(master = parent, fg_color = 'transparent')
         self.pack(expand = True, fill = 'both')
+
+        TwoEntryPanel(self, "Contrast Stretching", "New Min", "New Max", tab_vars['new_min'], tab_vars['new_max'], lambda:process_func('contrast streching'))
+        OneEntryPanel(self, "Text", "Var", tab_vars["order"], lambda:process_func('filter'))
 
 class Tab3Frame(ctk.CTkFrame):
     def __init__(self, parent, tab_vars, process_func):
