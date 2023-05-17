@@ -289,3 +289,234 @@ def reduce_gray_levels(img, gray_levels):
     new_img = new_img.astype(np.uint8)
     new_img = Image.fromarray(cv.cvtColor(new_img, cv.COLOR_BGR2RGB))   
     return new_img
+
+def ideal_lowpass_filter(img, D0):
+  img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
+#   img = cv.cvtColor(np.array(img), cv.COLOR_BGR2GRAY)
+
+  fft = np.fft.fft2(img)
+  fft_image_shifted = np.fft.fftshift(fft)
+
+  real = np.real(fft_image_shifted)
+  imaginary = np.imag(fft_image_shifted)
+
+  m, n = img.shape[:2]
+  center = (m // 2, n // 2)
+  filter = np.zeros((m, n))
+  for i in range(m):
+    for j in range(n):
+      D = np.sqrt((i - center[0]) ** 2 + (j - center[1]) ** 2)
+      if D <= D0:
+        filter[i,j] = 1
+
+  real = real * filter
+  imaginary = imaginary * filter
+
+  # revers transform to get image
+  filtered_fft_image = np.fft.ifftshift(real + 1j * imaginary)
+
+  filterd_image = np.abs(np.fft.ifft2(filtered_fft_image))
+  filterd_image = filterd_image / filterd_image.max() * 255 # normalize image
+  filterd_image = filterd_image.astype(np.uint8)
+  img = Image.fromarray(cv.cvtColor(filterd_image, cv.COLOR_GRAY2RGB))  
+  return img
+
+
+########Tab4-lab7########
+def ideal_highpass_filter(img,d):
+    
+    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
+
+    # img = cv.cvtColor(np.array(img), cv.COLOR_BGR2GRAY)  
+    img_f = np.fft.fft2(img)
+
+    img_fsh = np.fft.fftshift(img_f)
+    
+    rows, cols = img_f.shape
+    
+    img_fsh_real  = np.real(img_fsh)
+    img_fsh_imag = np.imag(img_fsh)
+
+    dist = np.zeros((rows, cols))
+   
+    for i in range(rows):
+        for c in range(cols):
+            dist[i,c] = np.sqrt( (i-rows/2)**2 + (c-cols/2)**2 )
+
+    
+    mask = np.ones((rows, cols))
+    mask[dist <= d] = 0
+    
+        
+  
+    img_fsh_real = img_fsh_real * mask
+
+    img_fsh_imag = img_fsh_imag * mask
+
+    
+    img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
+
+    img = np.fft.ifft2(img_fsh)
+    
+    img = np.uint8(np.abs(img))
+    
+    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB))  
+    return img
+
+
+
+def Butterworth_lowpass_filter(img,d,n=2):
+    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
+
+    # img = cv.cvtColor(np.array(img), cv.COLOR_BGR2GRAY) 
+
+
+    img_f = np.fft.fft2(img)
+
+    img_fsh = np.fft.fftshift(img_f)
+    
+    rows, cols  = img_f.shape
+    
+    img_fsh_real  = np.real(img_fsh)
+    img_fsh_imag = np.imag(img_fsh)
+
+   
+    
+    dist = np.zeros((rows, cols))
+   
+    for i in range(rows):
+        for c in range(cols):
+            dist[i,c] = np.sqrt( (i-rows/2)**2 + (c-cols/2)**2 )       
+
+    
+    mask =  1 / (1 + (dist/d)**(2*n))
+ 
+              
+  
+    img_fsh_real = img_fsh_real * mask
+
+    img_fsh_imag = img_fsh_imag * mask
+
+    
+    img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
+
+    img = np.fft.ifft2(img_fsh)
+    
+    img = np.uint8(np.abs(img))
+    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB)) 
+    return img
+
+
+def Butterworth_High_Pass_Filter(img,d,n=2):
+    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
+    # img = cv.cvtColor(np.array(img), cv.COLOR_BGR2GRAY)
+
+    img_f = np.fft.fft2(img)
+
+    img_fsh = np.fft.fftshift(img_f)
+    
+    rows, cols  = img_f.shape
+    
+    img_fsh_real  = np.real(img_fsh)
+    img_fsh_imag = np.imag(img_fsh)
+
+   
+    
+    dist = np.zeros((rows, cols))
+   
+    for i in range(rows):
+        for c in range(cols):
+            dist[i,c] = np.sqrt( (i-rows/2)**2 + (c-cols/2)**2 )       
+
+    
+    mask = 1 -  (1 / (1 + (dist/d)**(2*n)) )
+ 
+              
+  
+    img_fsh_real = img_fsh_real * mask
+
+    img_fsh_imag = img_fsh_imag * mask
+
+    
+    img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
+
+    img = np.fft.ifft2(img_fsh)
+    
+    img = np.uint8(np.abs(img))
+    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB)) 
+    return img
+
+def gaussian_lowpass_filter(img,d):
+    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
+    # img = cv.cvtColor(np.array(img), cv.COLOR_BGR2GRAY)
+    img_f = np.fft.fft2(img)
+
+    img_fsh = np.fft.fftshift(img_f)
+    
+    rows, cols  = img_f.shape
+    
+    img_fsh_real  = np.real(img_fsh)
+    img_fsh_imag = np.imag(img_fsh)
+
+   
+    dist = np.zeros((rows, cols))
+   
+    for i in range(rows):
+        for c in range(cols):
+            dist[i,c] = np.sqrt( (i-rows/2)**2 + (c-cols/2)**2 )       
+
+    
+    mask = np.exp(-(dist**2) / (2*(d**2)))
+ 
+              
+  
+    img_fsh_real = img_fsh_real * mask
+
+    img_fsh_imag = img_fsh_imag * mask
+
+    
+    img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
+
+    img = np.fft.ifft2(img_fsh)
+    
+    img = np.uint8(np.abs(img))
+    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB)) 
+    return img
+
+
+def Gaussian_High_Pass_Filter (img,d):
+    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
+    # img = cv.cvtColor(np.array(img), cv.COLOR_BGR2GRAY)
+    img_f = np.fft.fft2(img)
+
+    img_fsh = np.fft.fftshift(img_f)
+    
+    rows, cols  = img_f.shape
+    
+    img_fsh_real  = np.real(img_fsh)
+    img_fsh_imag = np.imag(img_fsh)
+
+   
+    dist = np.zeros((rows, cols))
+   
+    for i in range(rows):
+        for c in range(cols):
+            dist[i,c] = np.sqrt( (i-rows/2)**2 + (c-cols/2)**2 )       
+
+    
+    mask = 1 - np.exp(-(dist**2) / (2*(d**2)))
+ 
+              
+  
+    img_fsh_real = img_fsh_real * mask
+
+    img_fsh_imag = img_fsh_imag * mask
+
+    
+    img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
+
+    img = np.fft.ifft2(img_fsh)
+    
+    img = np.uint8(np.abs(img))
+    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB)) 
+    return img

@@ -2,7 +2,7 @@ import customtkinter as ctk
 from image_widgets import *
 from PIL import Image, ImageTk
 from menu import Menu
-from algorithms import adjust_brightness_optimized, cvt2gray_luminance, histogram_equalization, Power_Law_Transformations , Smoothing_Weighted_Filter,Edge_Detection,Sharpening_Filter,reduce_gray_levels, image_negative, histogram_matching
+from algorithms import  adjust_brightness_optimized, cvt2gray_luminance, histogram_equalization, Power_Law_Transformations , Smoothing_Weighted_Filter,Edge_Detection,Sharpening_Filter,reduce_gray_levels, image_negative, histogram_matching,ideal_lowpass_filter,ideal_highpass_filter,Butterworth_High_Pass_Filter,Butterworth_lowpass_filter,Gaussian_High_Pass_Filter,gaussian_lowpass_filter
 
 class App(ctk.CTk):
     def __init__(self):
@@ -53,6 +53,16 @@ class App(ctk.CTk):
             # 'effect' : ctk.StringVar(value=VIBRANCE_DEFAULT)
         }
 
+        self.tab4_vars = {
+            
+            'High/Low Pass': ctk.BooleanVar(value=False),
+            'Ideal': ctk.DoubleVar(value=0),
+            'Butterworth': ctk.DoubleVar(value=0),
+            'Gaussian': ctk.DoubleVar(value=0),
+          
+        }
+
+
         # self.tab1_vars['flip'].trace('w',self.process)
         # tab1
         self.tab1_vars['grayscale'].trace('w', lambda*args: self.process('B/W'))
@@ -62,6 +72,9 @@ class App(ctk.CTk):
         #tab3
         self.tab3_vars['edge_det'].trace('w', lambda *args: self.process('Edge'))
         self.tab3_vars['Sharp'].trace('w', lambda *args: self.process('Sharp'))
+
+        #tab4
+        self.tab4_vars['High/Low Pass'].trace('w', lambda *args: self.process('High/Low Pass')) 
         
     def process(self, *args):
         self.image = self.original
@@ -103,7 +116,29 @@ class App(ctk.CTk):
                     else:
                          self.image = self.original
             case 'reduce':
-                 self.image = reduce_gray_levels(self.image, self.tab3_vars['reduce'].get())            
+                 self.image = reduce_gray_levels(self.image, self.tab3_vars['reduce'].get()) 
+            case 'Ideal':
+                if self.tab4_vars['High/Low Pass'].get() == True:
+                    print('low') 
+                    self.image = ideal_lowpass_filter(self.image, self.tab4_vars['Ideal'].get())
+                else:
+                    print('High')   
+                    self.image = ideal_highpass_filter(self.image, self.tab4_vars['Ideal'].get())
+            case 'Butterworth':    
+                    if self.tab4_vars['High/Low Pass'].get() == True:
+                       print('low') 
+                       self.image = Butterworth_lowpass_filter(self.image, self.tab4_vars['Butterworth'].get())
+                    else:
+                      print('High')   
+                      self.image = Butterworth_High_Pass_Filter(self.image, self.tab4_vars['Butterworth'].get())
+
+            case 'Gaussian':    
+                    if self.tab4_vars['High/Low Pass'].get() == True:
+                       print('Low') 
+                       self.image = Butterworth_lowpass_filter(self.image, self.tab4_vars['Gaussian'].get())
+                    else:
+                      print('High')   
+                      self.image = Butterworth_High_Pass_Filter(self.image, self.tab4_vars['Gaussian'].get())                   
 
 
         
@@ -126,7 +161,7 @@ class App(ctk.CTk):
         self.image_import.grid_forget()
         self.image_output = ImageOutput(self, self.resize_image)
         self.close_button = CloseOutput(self, self.close_edit)
-        self.menu = Menu(self, self.tab1_vars, self.tab2_vars, self.tab3_vars, self.process, self.export_image)
+        self.menu = Menu(self, self.tab1_vars, self.tab2_vars, self.tab3_vars, self.tab4_vars,self.process, self.export_image)
 
     def close_edit(self):
         # remove the interface
