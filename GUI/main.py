@@ -2,13 +2,13 @@ import customtkinter as ctk
 from image_widgets import *
 from PIL import Image, ImageTk
 from menu import Menu
-from algorithms import  adjust_brightness_optimized, cvt2gray_luminance, histogram_equalization, Power_Law_Transformations , Smoothing_Weighted_Filter,Edge_Detection,Sharpening_Filter,reduce_gray_levels, image_negative, histogram_matching,ideal_lowpass_filter,ideal_highpass_filter,Butterworth_High_Pass_Filter,Butterworth_lowpass_filter,Gaussian_High_Pass_Filter,gaussian_lowpass_filter
+from algorithms import *
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         ctk.set_appearance_mode('dark')
-        ctk.set_default_color_theme("green")
+        ctk.set_default_color_theme("dark-blue")
         self.geometry('1000x600')
         self.title('Image Processing')
         self.minsize(800,500)
@@ -36,12 +36,14 @@ class App(ctk.CTk):
             'histogram_equalization': ctk.BooleanVar(value=False),
             'brightness': ctk.IntVar(value=BRIGHTNESS_DEFAULT),
             'gamma' : ctk.DoubleVar(value=1),
-            'hist_match_image_path' : ctk.StringVar(value=''),
-            'insert_image_path' : ctk.StringVar(value=''),
-            'subtract_image_path' : ctk.StringVar(value='')
+            'image_path' : ctk.StringVar(value=''),
+            'drop_options' : ['Histogram Matching', 'Add Image', 'Subtract Image']
         }
         
         self.tab2_vars = {
+            'new_min': ctk.IntVar(value=0),
+            'new_max': ctk.IntVar(value=255),
+            'order': ctk.IntVar(value=2)
         }
         
         self.tab3_vars = {
@@ -54,14 +56,11 @@ class App(ctk.CTk):
         }
 
         self.tab4_vars = {
-            
             'High/Low Pass': ctk.BooleanVar(value=False),
             'Ideal': ctk.DoubleVar(value=0),
             'Butterworth': ctk.DoubleVar(value=0),
             'Gaussian': ctk.DoubleVar(value=0),
-          
         }
-
 
         # self.tab1_vars['flip'].trace('w',self.process)
         # tab1
@@ -101,8 +100,8 @@ class App(ctk.CTk):
                 self.image = adjust_brightness_optimized(self.image, self.tab1_vars['brightness'].get())
             case 'power_trans':
                 self.image = Power_Law_Transformations(self.image, self.tab1_vars['gamma'].get())
-            case 'hist_match':
-                self.image = histogram_matching(self.image, self.tab1_vars['hist_match_image_path'].get())
+            case 'Histogram Matching':
+                self.image = histogram_matching(self.image, self.tab1_vars['image_path'].get())
             case 'blur':
                 self.image = Smoothing_Weighted_Filter(self.image, self.tab3_vars['blur'].get())
             case 'Edge':
