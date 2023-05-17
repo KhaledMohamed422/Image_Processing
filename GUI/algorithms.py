@@ -2,7 +2,9 @@ import cv2 as cv
 import numpy as np
 from math import floor
 from PIL import Image
+import matplotlib.pyplot as plt
 
+######################Tab1############
 def adjust_brightness_optimized(img, offset):
     img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
     # Cast the input image to int16 data type to allow for negative pixel values
@@ -91,7 +93,13 @@ def histogram_matching(src_img, ref_img_path):
     return src_img
 
 def Contrast(img,new_min,new_max):
-   
+
+    if isinstance(img, Image.Image):
+        img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
+
+    if new_min < 0 or new_max > 255:
+        return img
+    
     if len(img.shape) == 2 :
         size = img.shape
         new_img = np.zeros(size, np.uint8) 
@@ -119,6 +127,7 @@ def Contrast(img,new_min,new_max):
                     if new_val < 0  : new_val = 0
                     new_img[r,c,ch] = new_val     
               
+    new_img = Image.fromarray(cv.cvtColor(new_img, cv.COLOR_BGR2RGB))       
     return new_img
 
 
@@ -143,7 +152,7 @@ def Power_Law_Transformations(img,gamma):
                    
               
     new_img = Contrast(new_img, 0, 255) 
-    new_img = Image.fromarray(cv.cvtColor(new_img, cv.COLOR_BGR2RGB))
+    
     return new_img
 
 
@@ -218,6 +227,63 @@ def Edge_Detection(img):
     _, binary_img = cv.threshold(img_Edge,  127,255, cv.THRESH_BINARY)
     binary_img = Image.fromarray(cv.cvtColor(binary_img, cv.COLOR_BGR2RGB))
     return binary_img
+
+def add_image(img1, img2_path):  
+    img2 = cv.imread(img2_path)
+    img1 = cv.cvtColor(np.array(img1), cv.COLOR_RGB2BGR)
+    
+
+    img2 = cv.resize(img2, (img1.shape[1], img1.shape[0])) # resize img2 to match img1
+
+    NewImage = np.zeros_like(img1)
+    NewImage = img1 + img2
+
+    NewImage = Image.fromarray(cv.cvtColor(np.array(NewImage.clip(0, 255).astype(np.uint8)), cv.COLOR_BGR2RGB))            
+    return NewImage          
+
+def sub_image(img1, img2_path):
+    img2 = cv.imread(img2_path)
+    img1 = cv.cvtColor(np.array(img1), cv.COLOR_RGB2BGR)
+
+    img2 = cv.resize(img2, (img1.shape[1], img1.shape[0])) # resize img2 to match img1
+
+    NewImage = np.zeros_like(img1)
+    NewImage = img1 - img2
+
+    NewImage = Image.fromarray(cv.cvtColor(np.array(NewImage.clip(0, 255).astype(np.uint8)), cv.COLOR_BGR2RGB))              
+    return NewImage
+
+
+
+      
+def Drawing_the_histogram(img, name='img', title='Histogram'):
+    # Convert the image to the appropriate type
+    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
+    img = np.array(img)
+
+    # Compute the histogram of the image
+    hist = cv.calcHist([img], [0], None, [256], [0, 256])
+
+    # Resize the image
+    img_resized = cv.resize(img, (256, 256))
+
+    # Plot the image and the histogram side by side
+    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 6))
+
+    # Plot the image in the first row
+    axs[0].imshow(cv.cvtColor(img_resized, cv.COLOR_BGR2RGB))
+    axs[0].axis('off')
+
+    # Plot the histogram in the second row
+    axs[1].plot(hist, color='black')
+    axs[1].bar(np.arange(len(hist)), hist.ravel(), color='black')
+    axs[1].set_ylabel('Number of Pixels')
+    axs[1].set_xlabel('Pixel Value')
+
+    # Save the figure and return it as an array
+    fig.savefig("hist_" + name)
+    fig.show() 
+    return img
 
 
 

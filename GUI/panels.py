@@ -60,7 +60,7 @@ class SliderPanel_filter(Panel):
         self.num_label.configure(text = f'{round(self.data_var.get(), 2)}')
         
 class OneEntryPanel(Panel):
-    def __init__(self, parent, maintext, text1, var1, func):
+    def __init__(self, parent, maintext, text1, var1):
         super().__init__(parent = parent)
         
         self.rowconfigure((0,1,2), weight = 1)
@@ -70,8 +70,7 @@ class OneEntryPanel(Panel):
         
         ctk.CTkLabel(self, text = text1).grid(column = 0, row = 1, sticky = 'W', padx = 5)
         ctk.CTkEntry(self, textvariable = var1).grid(column = 1, row = 1, sticky='E')
-        self.apply_button = ctk.CTkButton(self, text = "Apply", command = func)
-        self.apply_button.grid(column = 0, columnspan = 2, row = 2, sticky='ew')
+ 
 
 class TwoEntryPanel(Panel): 
     def __init__(self, parent, maintext, text1, text2, var1, var2, func):

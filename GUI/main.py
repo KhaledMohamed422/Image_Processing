@@ -8,7 +8,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         ctk.set_appearance_mode('dark')
-        ctk.set_default_color_theme("dark-blue")
+        ctk.set_default_color_theme("green")
         self.geometry('1000x600')
         self.title('Image Processing')
         self.minsize(800,500)
@@ -43,7 +43,7 @@ class App(ctk.CTk):
         self.tab2_vars = {
             'new_min': ctk.IntVar(value=0),
             'new_max': ctk.IntVar(value=255),
-            'order': ctk.IntVar(value=2)
+            'Draw_Hist':ctk.BooleanVar(value=False),
         }
         
         self.tab3_vars = {
@@ -60,6 +60,7 @@ class App(ctk.CTk):
             'Ideal': ctk.DoubleVar(value=0),
             'Butterworth': ctk.DoubleVar(value=0),
             'Gaussian': ctk.DoubleVar(value=0),
+            'order': ctk.IntVar(value=2),
         }
 
         # self.tab1_vars['flip'].trace('w',self.process)
@@ -67,6 +68,9 @@ class App(ctk.CTk):
         self.tab1_vars['grayscale'].trace('w', lambda*args: self.process('B/W'))
         self.tab1_vars['invert'].trace('w', lambda*args: self.process('invert'))
         self.tab1_vars['histogram_equalization'].trace('w', lambda *args: self.process('hist'))
+
+        #tab2
+        self.tab2_vars['Draw_Hist'].trace('w', lambda*args: self.process('Draw Histogram'))
 
         #tab3
         self.tab3_vars['edge_det'].trace('w', lambda *args: self.process('Edge'))
@@ -91,6 +95,19 @@ class App(ctk.CTk):
                     self.image = image_negative(self.image)
                 else:
                     self.image = self.original
+            case 'contrast streching':
+                 print(self.tab2_vars['new_min'].get())
+                 print(self.tab2_vars['new_max'].get())
+                 self.image = Contrast(self.image,self.tab2_vars['new_min'].get(),self.tab2_vars['new_max'].get()) 
+               
+            case 'Draw Histogram':
+                     print(self.image)
+                     print(self.tab2_vars['Draw_Hist'].get())
+                     if self.tab2_vars['Draw_Hist'].get() == True:
+                        self.image = Drawing_the_histogram(self.image)
+                        print(self.image)
+                     else:
+                        self.image = self.original     
             case 'hist':
                 if self.tab1_vars['histogram_equalization'].get() == True:
                     self.image = histogram_equalization(self.image)
@@ -102,6 +119,10 @@ class App(ctk.CTk):
                 self.image = Power_Law_Transformations(self.image, self.tab1_vars['gamma'].get())
             case 'Histogram Matching':
                 self.image = histogram_matching(self.image, self.tab1_vars['image_path'].get())
+            case 'Add Image':
+                self.image = add_image(self.image, self.tab1_vars['image_path'].get())
+            case 'Subtract Image':    
+                self.image = sub_image(self.image, self.tab1_vars['image_path'].get())
             case 'blur':
                 self.image = Smoothing_Weighted_Filter(self.image, self.tab3_vars['blur'].get())
             case 'Edge':
@@ -126,10 +147,11 @@ class App(ctk.CTk):
             case 'Butterworth':    
                     if self.tab4_vars['High/Low Pass'].get() == True:
                        print('low') 
-                       self.image = Butterworth_lowpass_filter(self.image, self.tab4_vars['Butterworth'].get())
+                       print(self.tab4_vars['order'].get()) 
+                       self.image = Butterworth_lowpass_filter(self.image, self.tab4_vars['Butterworth'].get(),self.tab4_vars['order'].get())
                     else:
                       print('High')   
-                      self.image = Butterworth_High_Pass_Filter(self.image, self.tab4_vars['Butterworth'].get())
+                      self.image = Butterworth_High_Pass_Filter(self.image, self.tab4_vars['Butterworth'].get(),self.tab4_vars['order'].get())
 
             case 'Gaussian':    
                     if self.tab4_vars['High/Low Pass'].get() == True:

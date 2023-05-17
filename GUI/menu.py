@@ -28,16 +28,16 @@ class Tab1Frame(ctk.CTkFrame):
         SwitchPanel(self, (tab_vars['grayscale'], 'B/W'), (tab_vars['invert'], 'invert'))
         SwitchPanel(self, (tab_vars['histogram_equalization'], 'Histogram Equalization'))
         SliderPanel(self, 'Brightness Offset', tab_vars['brightness'], 0, 100, lambda: process_func('Brightness'))
-        SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 1, 5, lambda: process_func('power_trans')) 
+        SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 0, 5, lambda: process_func('power_trans')) 
         ImageChooserWithDrop(self, tab_vars['image_path'], tab_vars['drop_options'], process_func)
 
 class Tab2Frame(ctk.CTkFrame):
     def __init__(self, parent, tab_vars, process_func):
         super().__init__(master = parent, fg_color = 'transparent')
         self.pack(expand = True, fill = 'both')
-
+        SwitchPanel(self, (tab_vars['Draw_Hist'], 'Draw Histogram'))
         TwoEntryPanel(self, "Contrast Stretching", "New Min", "New Max", tab_vars['new_min'], tab_vars['new_max'], lambda:process_func('contrast streching'))
-        OneEntryPanel(self, "Text", "Var", tab_vars["order"], lambda:process_func('filter'))
+       
 
 class Tab3Frame(ctk.CTkFrame):
     def __init__(self, parent, tab_vars, process_func):
@@ -57,6 +57,7 @@ class Tab4Frame(ctk.CTkFrame):
         
         # DropDownPanel(self, tab_vars['effect'], EFFECT_OPTIONS)
         SwitchPanel(self, (tab_vars['High/Low Pass'], 'High/Low Pass'))
+        OneEntryPanel(self, "Order of Butterworth Filter", "N: ", tab_vars["order"])
         SliderPanel(self, 'Ideal Filter', tab_vars['Ideal'],0,30,lambda: process_func('Ideal'))
         SliderPanel(self, 'Butterworth Filter', tab_vars['Butterworth'],0,50,lambda: process_func('Butterworth'))
         SliderPanel(self, 'Gaussian Filter', tab_vars['Gaussian'],0,50,lambda: process_func('Gaussian'))
