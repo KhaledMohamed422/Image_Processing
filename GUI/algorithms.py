@@ -361,7 +361,7 @@ def ideal_lowpass_filter(img, D0):
 
   m, n = img.shape[:2]
   center = (m // 2, n // 2)
-  filter = np.zeros((m, n))
+  filter = np.zeros((m, n), dtype=np.float32)
   for i in range(m):
     for j in range(n):
       D = np.sqrt((i - center[0]) ** 2 + (j - center[1]) ** 2)
@@ -388,15 +388,15 @@ def ideal_highpass_filter(img,d):
 
     # img = cv.cvtColor(np.array(img), cv.COLOR_BGR2GRAY)  
     img_f = np.fft.fft2(img)
-
     img_fsh = np.fft.fftshift(img_f)
     
-    rows, cols = img_f.shape
+    
     
     img_fsh_real  = np.real(img_fsh)
     img_fsh_imag = np.imag(img_fsh)
+    rows, cols = img_f.shape
 
-    dist = np.zeros((rows, cols))
+    dist = np.zeros((rows, cols), dtype=np.float32)
    
     for i in range(rows):
         for c in range(cols):
@@ -415,11 +415,10 @@ def ideal_highpass_filter(img,d):
     
     img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
 
-    img = np.fft.ifft2(img_fsh)
-    
-    img = np.uint8(np.abs(img))
-    
-    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB))  
+    filterd_image = np.abs(np.fft.ifft2(img_fsh))
+    filterd_image = filterd_image / filterd_image.max() * 255 
+
+    img = Image.fromarray(cv.cvtColor(filterd_image.astype(np.uint8), cv.COLOR_GRAY2RGB))  
     return img
 
 
@@ -434,14 +433,14 @@ def Butterworth_lowpass_filter(img,d,n=2):
 
     img_fsh = np.fft.fftshift(img_f)
     
-    rows, cols  = img_f.shape
     
     img_fsh_real  = np.real(img_fsh)
     img_fsh_imag = np.imag(img_fsh)
 
+    rows, cols  = img_f.shape
    
     
-    dist = np.zeros((rows, cols))
+    dist = np.zeros((rows, cols), dtype=np.float32)
    
     for i in range(rows):
         for c in range(cols):
@@ -459,10 +458,10 @@ def Butterworth_lowpass_filter(img,d,n=2):
     
     img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
 
-    img = np.fft.ifft2(img_fsh)
-    
-    img = np.uint8(np.abs(img))
-    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB)) 
+    filterd_image = np.abs(np.fft.ifft2(img_fsh))
+    filterd_image = filterd_image / filterd_image.max() * 255 
+
+    img = Image.fromarray(cv.cvtColor(filterd_image.astype(np.uint8), cv.COLOR_GRAY2RGB))  
     return img
 
 
@@ -474,14 +473,14 @@ def Butterworth_High_Pass_Filter(img,d,n=2):
 
     img_fsh = np.fft.fftshift(img_f)
     
-    rows, cols  = img_f.shape
+    
     
     img_fsh_real  = np.real(img_fsh)
     img_fsh_imag = np.imag(img_fsh)
 
-   
+    rows, cols  = img_f.shape
     
-    dist = np.zeros((rows, cols))
+    dist = np.zeros((rows, cols), dtype=np.float32)
    
     for i in range(rows):
         for c in range(cols):
@@ -499,10 +498,10 @@ def Butterworth_High_Pass_Filter(img,d,n=2):
     
     img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
 
-    img = np.fft.ifft2(img_fsh)
-    
-    img = np.uint8(np.abs(img))
-    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB)) 
+    filterd_image = np.abs(np.fft.ifft2(img_fsh))
+    filterd_image = filterd_image / filterd_image.max() * 255 
+
+    img = Image.fromarray(cv.cvtColor(filterd_image.astype(np.uint8), cv.COLOR_GRAY2RGB))  
     return img
 
 def gaussian_lowpass_filter(img,d):
@@ -518,7 +517,7 @@ def gaussian_lowpass_filter(img,d):
     img_fsh_imag = np.imag(img_fsh)
 
    
-    dist = np.zeros((rows, cols))
+    dist = np.zeros((rows, cols), dtype=np.float32)
    
     for i in range(rows):
         for c in range(cols):
@@ -536,10 +535,10 @@ def gaussian_lowpass_filter(img,d):
     
     img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
 
-    img = np.fft.ifft2(img_fsh)
-    
-    img = np.uint8(np.abs(img))
-    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB)) 
+    filterd_image = np.abs(np.fft.ifft2(img_fsh))
+    filterd_image = filterd_image / filterd_image.max() * 255 
+
+    img = Image.fromarray(cv.cvtColor(filterd_image.astype(np.uint8), cv.COLOR_GRAY2RGB))  
     return img
 
 
@@ -556,7 +555,7 @@ def Gaussian_High_Pass_Filter (img,d):
     img_fsh_imag = np.imag(img_fsh)
 
    
-    dist = np.zeros((rows, cols))
+    dist = np.zeros((rows, cols), dtype=np.float32)
    
     for i in range(rows):
         for c in range(cols):
@@ -574,8 +573,8 @@ def Gaussian_High_Pass_Filter (img,d):
     
     img_fsh = np.fft.ifftshift(img_fsh_real + 1j * img_fsh_imag )
 
-    img = np.fft.ifft2(img_fsh)
-    
-    img = np.uint8(np.abs(img))
-    img = Image.fromarray(cv.cvtColor(img, cv.COLOR_GRAY2RGB)) 
+    filterd_image = np.abs(np.fft.ifft2(img_fsh))
+    filterd_image = filterd_image / filterd_image.max() * 255 
+
+    img = Image.fromarray(cv.cvtColor(filterd_image.astype(np.uint8), cv.COLOR_GRAY2RGB))  
     return img
