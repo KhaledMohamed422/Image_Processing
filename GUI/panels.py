@@ -33,7 +33,7 @@ class SliderPanel(Panel):
     def update_text(self,*args):
         self.num_label.configure(text = f'{round(self.data_var.get(), 2)}')
 
-class SliderPanel_filter(Panel):
+class SliderPanelWithSteps(Panel):
     def __init__(self, parent, text, data_var,  min_value, max_value, func,step):
         super().__init__(parent = parent)
 
@@ -54,7 +54,7 @@ class SliderPanel_filter(Panel):
                 to = max_value,
                 number_of_steps=step).grid(row = 1, column = 0, columnspan = 2, sticky = 'ew', padx = 5, pady = 5)
         self.apply_button = ctk.CTkButton(self, text = "Apply", command = func)
-        self.apply_button.grid(column = 0, columnspan = 2, row = 2)
+        self.apply_button.grid(column = 0, columnspan = 2, row = 2, sticky='ew')
 
     def update_text(self,*args):
         self.num_label.configure(text = f'{round(self.data_var.get(), 2)}')
@@ -71,7 +71,6 @@ class OneEntryPanel(Panel):
         ctk.CTkLabel(self, text = text1).grid(column = 0, row = 1, sticky = 'W', padx = 5)
         ctk.CTkEntry(self, textvariable = var1).grid(column = 1, row = 1, sticky='E')
  
-
 class TwoEntryPanel(Panel): 
     def __init__(self, parent, maintext, text1, text2, var1, var2, func):
         super().__init__(parent = parent)
@@ -88,7 +87,14 @@ class TwoEntryPanel(Panel):
         ctk.CTkEntry(self, textvariable = var2).grid(column = 1, row = 2)
         self.apply_button = ctk.CTkButton(self, text = "Apply", command = func)
         self.apply_button.grid(column = 0, columnspan = 2, row = 3, sticky='ew')
-        
+      
+class CustomTwoEntryPanel(TwoEntryPanel):
+    def __init__(self, parent, maintext, text1, text2, var1, var2, func):
+        super().__init__(parent=parent, maintext=maintext, text1=text1, text2=text2, var1=var1, var2=var2, func=func)
+
+        # Custom modifications
+        self.apply_button.destroy()  # Remove the Apply button
+
 class SegmentPanel(Panel):
     def __init__(self, parent, text, data_vars, options):
         super().__init__(parent = parent)
@@ -203,6 +209,9 @@ class ImageChooser(Panel):
                 self.apply_button.pack()
             else:
                 self.apply_button.pack_forget()
+        else:
+            self.apply_button.pack_forget()
+            self.output.configure(text="")
 
 class ImageChooserWithDrop(Panel):
     def __init__(self, parent, path_string, options, func):
@@ -253,7 +262,9 @@ class ImageChooserWithDrop(Panel):
                 self.apply_button.pack()
             else:
                 self.apply_button.pack_forget()
-
+        else:
+            self.apply_button.pack_forget()
+            self.output.configure(text="")
         
 class SaveButton(ctk.CTkButton):
     def __init__(self, parent, export_image, name_string, format_string, path_string):
