@@ -47,23 +47,20 @@ class App(ctk.CTk):
         }
         
         self.tab3_vars = {
-            'reduce': ctk.IntVar(value=0),
-            'blur': ctk.IntVar(value=0),
+            'reduce': ctk.IntVar(value=1),
+            'blur': ctk.IntVar(value=1),
             'Sharp': ctk.BooleanVar(value=False),
             'edge_det': ctk.BooleanVar(value=False),
-            # 'contrast': ctk.IntVar(value=CONTRAST_DEFAULT),
-            # 'effect' : ctk.StringVar(value=VIBRANCE_DEFAULT)
         }
 
         self.tab4_vars = {
             'High/Low Pass': ctk.BooleanVar(value=False),
-            'Ideal': ctk.DoubleVar(value=0),
-            'Butterworth': ctk.DoubleVar(value=0),
+            'Ideal': ctk.DoubleVar(value=0.1),
+            'Butterworth': ctk.DoubleVar(value=0.1),
             'Gaussian': ctk.DoubleVar(value=0),
             'order': ctk.IntVar(value=2),
         }
 
-        # self.tab1_vars['flip'].trace('w',self.process)
         # tab1
         self.tab1_vars['grayscale'].trace('w', lambda*args: self.process('B/W'))
         self.tab1_vars['invert'].trace('w', lambda*args: self.process('invert'))
@@ -104,10 +101,7 @@ class App(ctk.CTk):
                      print(self.image)
                      print(self.tab2_vars['Draw_Hist'].get())
                      if self.tab2_vars['Draw_Hist'].get() == True:
-                        self.image = Drawing_the_histogram(self.image)
-                        print(self.image)
-                     else:
-                        self.image = self.original     
+                        Drawing_the_histogram(self.image)
             case 'hist':
                 if self.tab1_vars['histogram_equalization'].get() == True:
                     self.image = histogram_equalization(self.image)
@@ -160,6 +154,8 @@ class App(ctk.CTk):
                     else:
                       print('High')   
                       self.image = Butterworth_High_Pass_Filter(self.image, self.tab4_vars['Gaussian'].get())                   
+            case 'resize':
+                    self.image = reverse_1_order(self.image, (self.export_vars['height'].get(), self.export_vars['width'].get()))
 
 
         
@@ -182,7 +178,11 @@ class App(ctk.CTk):
         self.image_import.grid_forget()
         self.image_output = ImageOutput(self, self.resize_image)
         self.close_button = CloseOutput(self, self.close_edit)
-        self.menu = Menu(self, self.tab1_vars, self.tab2_vars, self.tab3_vars, self.tab4_vars,self.process, self.export_image)
+        self.export_vars = {
+            'width' : ctk.IntVar(value=self.original.width),
+            'height' : ctk.IntVar(value=self.original.height),
+        }
+        self.menu = Menu(self, self.tab1_vars, self.tab2_vars, self.tab3_vars, self.tab4_vars, self.export_vars, self.process, self.export_image)
 
     def close_edit(self):
         # remove the interface
@@ -216,6 +216,7 @@ class App(ctk.CTk):
     
     def export_image(self, name, file, path):
         export_string = f'{path}/{name}.{file}'
-        print(export_string)
+        if self.export_vars['width'].get() != self.original.width or self.export_vars['height'].get() != self.original.height:
+            self.process('resize')
         self.image.save(export_string)
 App()
