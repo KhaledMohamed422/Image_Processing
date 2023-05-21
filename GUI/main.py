@@ -172,6 +172,7 @@ class App(ctk.CTk):
 
     def import_image(self, path):
         self.original = Image.open(path)
+        self.original = self.original.convert('RGB')
         self.image = self.original
         self.image_ratio = self.image.size[0] / self.image.size[1]
         self.image_tk = ImageTk.PhotoImage(self.image)
