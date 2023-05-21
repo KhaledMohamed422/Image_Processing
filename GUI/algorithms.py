@@ -346,7 +346,7 @@ def reduce_gray_levels(img, gray_levels):
     
     # Convert image back to uint8 for display
     new_img = new_img.astype(np.uint8)
-    new_img = Image.fromarray(cv.cvtColor(new_img, cv.COLOR_BGR2RGB))   
+    new_img = Image.fromarray(cv.cvtColor(new_img, cv.COLOR_BGR2RGB)) 
     return new_img
 
 def ideal_lowpass_filter(img, D0):
@@ -578,3 +578,61 @@ def Gaussian_High_Pass_Filter (img,d):
 
     img = Image.fromarray(cv.cvtColor(filterd_image.astype(np.uint8), cv.COLOR_GRAY2RGB))  
     return img
+
+########Export Tab########
+import math
+
+def convert_to_bgr(image):
+    if len(image.shape) == 2:
+        # Grayscale image
+        bgr_image = cv.cvtColor(image, cv.COLOR_GRAY2BGR)
+    elif len(image.shape) == 3 and image.shape[2] == 3:
+        # RGB image
+        bgr_image = cv.cvtColor(image, cv.COLOR_RGB2BGR)
+    else:
+        raise ValueError(f"Unsupported image format {image.shape}, {image.shape[2]}")
+
+    return bgr_image
+
+def reverse_1_order(img, output_size):
+    img = np.array(img)
+    img = convert_to_bgr(img)
+    print(img.shape)
+    row_ratio = img.shape[0] / output_size[0]
+    col_ratio = img.shape[1] / output_size[1]
+
+    output = np.zeros((output_size[0], output_size[1], img.shape[2]))
+
+    for channel in range(img.shape[2]):
+
+        for new_x in range(output_size[0]):
+            old_x = new_x * row_ratio
+            x1 = math.floor(old_x) # we can use int()
+            x2 = x1 + 1
+
+            if x2 >= img.shape[0]:
+                x2 = x1
+            x_fraction = abs(old_x-x1)
+
+            for new_y in range(output_size[1]):
+                old_y = new_y * col_ratio
+                y1 = math.floor(old_y)
+                y2 = y1 + 1
+
+                if y2 >= img.shape[1]:
+                    y2 = y1
+                y_fraction = abs(old_y-y1)
+
+                p1 = img[x1, y1, channel]
+                p2 = img[x2, y1, channel]
+                p3 = img[x1, y2, channel]
+                p4 = img[x2, y2, channel]
+
+                z1 = p1 * (1 - x_fraction) + p2*(x_fraction)
+                z2 = p3 * (1 - y_fraction) + p4*(y_fraction)
+                new_pixel = z1 * (1 - y_fraction) + z2 * (y_fraction)
+
+                output[new_x, new_y, channel] = math.floor(new_pixel)
+
+    output = Image.fromarray(cv.cvtColor(output.astype(np.uint8), cv.COLOR_BGR2RGB))  
+    return output
