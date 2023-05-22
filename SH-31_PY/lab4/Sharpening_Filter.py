@@ -8,52 +8,50 @@ import cv2 as cv
 import numpy as np
 from math import floor
 
+
 img = cv.imread('img/1.jpg')
-# img = cv.resize(img,(400,250))
 
 
-
-def Sharpening_Filter(img):
+def Edge_Detection(img):
+    #converte img to gray level. 
+    img = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+    
     #set size of the mask
     mask_size = 3
     
     # formula for choice the padding size knowing the mask size 
-    padded_s = floor(mask_size / 2) 
+    padded_s = floor(mask_size / 2)  
     
     # Pad the input image with REPLICATE to handle borders
     img_padded = cv.copyMakeBorder(img, padded_s, padded_s, padded_s, padded_s,cv.BORDER_REPLICATE)
     
     # Create mask for Sharpening Filter
-    mask = np.array([[0,-1,0],[-1,5,-1],[0,-1,0]])
-    # [[ -1, -1, -1],[ -1, 9, -1],[ -1, -1, -1]]
- 
-    #create new image
-    Sharped_img = np.zeros_like(img, dtype=np.uint8)
+    mask = np.array([[-1,-1,-1],[-1,8,-1],[-1,-1,-1]], dtype=np.int32) 
+    
+    #create new image to hold the edges
+    img_Edge = np.zeros_like(img, dtype=np.int64)
 
-    #Applying Sharpening Filter mask on the image
-    for ch in range(img.shape[2]):  
-        for i in range(img.shape[0]):
-            for j in range(img.shape[1]):
-                value = 0
-                
-                for k in range(mask_size):
-                    for l in range(mask_size):
-                        value += img_padded[i+k, j+l, ch] * mask[k, l]
-                
-                # Post Processing Cut off 
-                if value < 0 :
-                    Sharped_img[i, j,ch] = 0
-                elif value > 255:
-                    Sharped_img[i, j,ch] = 255
-                else:
-                    Sharped_img[i, j,ch] = value
-                    
-    return Sharped_img            
+    # Apply the Edge Detection filter on the imag
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            img_Edge[i, j] = np.sum(mask * img_padded[i:i+mask_size, j:j+mask_size])
+            
+            if img_Edge[i, j] < 0 :
+                img_Edge[i, j] = 0
+            elif img_Edge[i, j] > 255:
+                img_Edge[i, j] = 255
+    
+    # Post-processing convert A gray image to a binery. 
+    _, binary_img = cv.threshold(img_Edge.astype('uint8'),  100,255, cv.THRESH_BINARY)
+    return binary_img
 
-cv.imshow('Sharpening Filter img',Sharpening_Filter(img))
-cv.imshow('Orgain',img)
+cv.imshow('Edge of the img',Edge_Detection(img))
+# cv.imshow('edge build in',edges)
+cv.imshow('orgain',img)
 cv.waitKey(0)
-cv.destroyAllWindows()
+cv.destroyAllWindows()          
+
+
 
 def gaussian_mask(sigma):
     # Determine kernel size

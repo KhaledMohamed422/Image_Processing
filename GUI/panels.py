@@ -188,15 +188,32 @@ class ImageChooser(Panel):
         self.apply_button = ctk.CTkButton(self, text="Apply", command=func)
     
     def open_file_dialog(self):
-        filetypes = (("jpeg, png, jpg", "*.jpg *.png *.jpeg"),
+        filetypes = (("jpeg, png, jpg, tif", "*.jpg *.png *.jpeg *.tif"), 
                      ("png files", "*.png"),
                      ("jpg files", "*.jpg"),
-                     ("jpeg files", "*.jpeg"))
+                     ("jpeg files", "*.jpeg"),
+                     ("tif files", "*.tif")) 
         
         file_path = filedialog.askopenfilename(filetypes=filetypes)
         
         if file_path:
             self.path_string.set(file_path)
+    
+    def update_text(self, *args):
+        file_path = self.path_string.get()
+        
+        if file_path:
+            file_name = basename(file_path)
+            self.output.configure(text=file_name)
+            
+            if file_name != "None":
+                self.apply_button.pack()
+            else:
+                self.apply_button.pack_forget()
+        else:
+            self.apply_button.pack_forget()
+            self.output.configure(text="")
+
     
     def update_text(self, *args):
         file_path = self.path_string.get()
@@ -241,10 +258,11 @@ class ImageChooserWithDrop(Panel):
         self.apply_button.configure(command = self.func)
     
     def open_file_dialog(self):
-        filetypes = (("jpeg, png, jpg", "*.jpg *.png *.jpeg"),
+        filetypes = (("jpeg, png, jpg, tif", "*.jpg *.png *.jpeg *.tif"), 
                      ("png files", "*.png"),
                      ("jpg files", "*.jpg"),
-                     ("jpeg files", "*.jpeg"))
+                     ("jpeg files", "*.jpeg"),
+                     ("tif files", "*.tif")) 
         
         file_path = filedialog.askopenfilename(filetypes=filetypes)
         

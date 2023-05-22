@@ -92,6 +92,8 @@ def histogram_matching(src_img, ref_img_path):
     src_img = Image.fromarray(cv.cvtColor(src_img, cv.COLOR_BGR2RGB))
     return src_img
 
+
+#############Tab2################
 def Contrast(img,new_min,new_max):
 
     if isinstance(img, Image.Image):
@@ -154,7 +156,32 @@ def Power_Law_Transformations(img,gamma):
     new_img = Contrast(new_img, 0, 255) 
     
     return new_img
+def add_image(img1, img2_path):  
+    img2 = cv.imread(img2_path)
+    img1 = cv.cvtColor(np.array(img1), cv.COLOR_RGB2BGR)
+    
 
+    img2 = cv.resize(img2, (img1.shape[1], img1.shape[0])) # resize img2 to match img1
+
+    NewImage = np.zeros_like(img1)
+    NewImage = img1 + img2
+
+    NewImage = Image.fromarray(cv.cvtColor(np.array(NewImage.clip(0, 255).astype(np.uint8)), cv.COLOR_BGR2RGB))            
+    return NewImage          
+
+def sub_image(img1, img2_path):
+    img2 = cv.imread(img2_path)
+    img1 = cv.cvtColor(np.array(img1), cv.COLOR_RGB2BGR)
+
+    img2 = cv.resize(img2, (img1.shape[1], img1.shape[0])) # resize img2 to match img1
+
+    NewImage = np.zeros_like(img1)
+    NewImage = img1 - img2
+
+    NewImage = Image.fromarray(cv.cvtColor(np.array(NewImage.clip(0, 255).astype(np.uint8)), cv.COLOR_BGR2RGB))              
+    return NewImage
+
+###############Tab3#########################
 
 def gaussian_mask(sigma):
     # Determine kernel size
@@ -194,9 +221,7 @@ def Smoothing_Weighted_Filter(img,sigma):
 
 def Edge_Detection(img):
 
-    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
-    #converte img to gray level. 
-    img = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
     
     #set size of the mask
     mask_size = 3
@@ -208,12 +233,12 @@ def Edge_Detection(img):
     img_padded = cv.copyMakeBorder(img, padded_s, padded_s, padded_s, padded_s,cv.BORDER_REPLICATE)
     
     # Create mask for Sharpening Filter
-    mask = np.array([[0,1,0],[1,-4,1],[0,1,0]], dtype=np.int32) 
+    mask = np.array([[-1,-1,-1],[-1,8,-1],[-1,-1,-1]], dtype=np.int32) 
     
     #create new image to hold the edges
-    img_Edge = np.zeros_like(img, dtype=np.uint8)
+    img_Edge = np.zeros_like(img, dtype=np.int64)
 
-    # Apply the Edge Detection filter on the image
+    # Apply the Edge Detection filter on the imag
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
             img_Edge[i, j] = np.sum(mask * img_padded[i:i+mask_size, j:j+mask_size])
@@ -224,36 +249,9 @@ def Edge_Detection(img):
                 img_Edge[i, j] = 255
     
     # Post-processing convert A gray image to a binery. 
-    _, binary_img = cv.threshold(img_Edge,  127,255, cv.THRESH_BINARY)
-    binary_img = Image.fromarray(cv.cvtColor(binary_img, cv.COLOR_BGR2RGB))
+    _, binary_img = cv.threshold(img_Edge.astype('uint8'),  100,255, cv.THRESH_BINARY)
+    binary_img = Image.fromarray(cv.cvtColor(binary_img, cv.COLOR_GRAY2RGB))
     return binary_img
-
-def add_image(img1, img2_path):  
-    img2 = cv.imread(img2_path)
-    img1 = cv.cvtColor(np.array(img1), cv.COLOR_RGB2BGR)
-    
-
-    img2 = cv.resize(img2, (img1.shape[1], img1.shape[0])) # resize img2 to match img1
-
-    NewImage = np.zeros_like(img1)
-    NewImage = img1 + img2
-
-    NewImage = Image.fromarray(cv.cvtColor(np.array(NewImage.clip(0, 255).astype(np.uint8)), cv.COLOR_BGR2RGB))            
-    return NewImage          
-
-def sub_image(img1, img2_path):
-    img2 = cv.imread(img2_path)
-    img1 = cv.cvtColor(np.array(img1), cv.COLOR_RGB2BGR)
-
-    img2 = cv.resize(img2, (img1.shape[1], img1.shape[0])) # resize img2 to match img1
-
-    NewImage = np.zeros_like(img1)
-    NewImage = img1 - img2
-
-    NewImage = Image.fromarray(cv.cvtColor(np.array(NewImage.clip(0, 255).astype(np.uint8)), cv.COLOR_BGR2RGB))              
-    return NewImage
-
-
 
       
 def Drawing_the_histogram(img, name='img', title='Histogram'):
@@ -289,48 +287,45 @@ def Drawing_the_histogram(img, name='img', title='Histogram'):
 
 
 def Sharpening_Filter(img):
-    img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
-    #set size of the mask
-    mask_size = 3
+        img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
     
-    # formula for choice the padding size knowing the mask size 
-    padded_s = floor(mask_size / 2) 
-    
-    # Pad the input image with REPLICATE to handle borders
-    img_padded = cv.copyMakeBorder(img, padded_s, padded_s, padded_s, padded_s,cv.BORDER_REPLICATE)
-    
-    # Create mask for Sharpening Filter
-    mask = np.array([[0,-1,0],[-1,5,-1],[0,-1,0]])
-    # [[ -1, -1, -1],[ -1, 9, -1],[ -1, -1, -1]]
- 
-    #create new image
-    Sharped_img = np.zeros_like(img, dtype=np.uint8)
+        #set size of the mask
+        mask_size = 3
+        
+        # formula for choice the padding size knowing the mask size 
+        padded_s = floor(mask_size / 2)  
+        
+        # Pad the input image with REPLICATE to handle borders
+        img_padded = cv.copyMakeBorder(img, padded_s, padded_s, padded_s, padded_s,cv.BORDER_REPLICATE)
+        
+        # Create mask for point Sharpening Filter
+        mask = np.array([[-1,-1,-1],[-1,9,-1],[-1,-1,-1]], dtype=np.int32) 
+        
+        #create new image to hold the edges
+        Sharped_img = np.zeros_like(img, dtype=np.int64)
 
-    #Applying Sharpening Filter mask on the image
-    for ch in range(img.shape[2]):  
+        # Apply the Edge Detection filter on the imag
         for i in range(img.shape[0]):
             for j in range(img.shape[1]):
-                value = 0
+                for c in range(img.shape[2]):
+                    Sharped_img[i, j,c] = np.sum(mask * img_padded[i:i+mask_size, j:j+mask_size,c])
                 
-                for k in range(mask_size):
-                    for l in range(mask_size):
-                        value += img_padded[i+k, j+l, ch] * mask[k, l]
-                
-                # Post Processing Cut off 
-                if value < 0 :
-                    Sharped_img[i, j,ch] = 0
-                elif value > 255:
-                    Sharped_img[i, j,ch] = 255
-                else:
-                    Sharped_img[i, j,ch] = value
-    Sharped_img = Image.fromarray(cv.cvtColor(Sharped_img, cv.COLOR_BGR2RGB))               
-    return Sharped_img 
+                    if Sharped_img[i, j,c] < 0 :
+                        Sharped_img[i, j,c] = 0
+                    elif Sharped_img[i, j,c] > 255:
+                        Sharped_img[i, j,c] = 255
+            
+        # Post-processing convert A gray image to a binery. 
+       
+        Sharped_img = Image.fromarray(cv.cvtColor(Sharped_img.astype('uint8'), cv.COLOR_BGR2RGB))              
+        return Sharped_img 
 
 
 
 def reduce_gray_levels(img, gray_levels):
     img = cv.cvtColor(np.array(img), cv.COLOR_RGB2BGR)
     # Calculate gap between gray levels
+    gray_levels = 2 ** gray_levels 
     gap = 256 // gray_levels
     
     # Generate array of colors
@@ -349,6 +344,8 @@ def reduce_gray_levels(img, gray_levels):
     new_img = Image.fromarray(cv.cvtColor(new_img, cv.COLOR_BGR2RGB)) 
     return new_img
 
+
+######## Tab4-lab7 ########
 def ideal_lowpass_filter(img, D0):
   img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
 #   img = cv.cvtColor(np.array(img), cv.COLOR_BGR2GRAY)
@@ -381,7 +378,7 @@ def ideal_lowpass_filter(img, D0):
   return img
 
 
-########Tab4-lab7########
+
 def ideal_highpass_filter(img,d):
     
     img = cv.cvtColor(np.array(img), cv.COLOR_RGB2GRAY)
@@ -473,8 +470,6 @@ def Butterworth_High_Pass_Filter(img,d,n=2):
 
     img_fsh = np.fft.fftshift(img_f)
     
-    
-    
     img_fsh_real  = np.real(img_fsh)
     img_fsh_imag = np.imag(img_fsh)
 
@@ -489,8 +484,6 @@ def Butterworth_High_Pass_Filter(img,d,n=2):
     
     mask = 1 -  (1 / (1 + (dist/d)**(2*n)) )
  
-              
-  
     img_fsh_real = img_fsh_real * mask
 
     img_fsh_imag = img_fsh_imag * mask
@@ -580,7 +573,7 @@ def Gaussian_High_Pass_Filter (img,d):
     return img
 
 ########Export Tab########
-import math
+
 
 def convert_to_bgr(image):
     if len(image.shape) == 2:
@@ -607,7 +600,7 @@ def reverse_1_order(img, output_size):
 
         for new_x in range(output_size[0]):
             old_x = new_x * row_ratio
-            x1 = math.floor(old_x) # we can use int()
+            x1 = floor(old_x) # we can use int()
             x2 = x1 + 1
 
             if x2 >= img.shape[0]:
@@ -616,7 +609,7 @@ def reverse_1_order(img, output_size):
 
             for new_y in range(output_size[1]):
                 old_y = new_y * col_ratio
-                y1 = math.floor(old_y)
+                y1 = floor(old_y)
                 y2 = y1 + 1
 
                 if y2 >= img.shape[1]:
@@ -632,7 +625,7 @@ def reverse_1_order(img, output_size):
                 z2 = p3 * (1 - y_fraction) + p4*(y_fraction)
                 new_pixel = z1 * (1 - y_fraction) + z2 * (y_fraction)
 
-                output[new_x, new_y, channel] = math.floor(new_pixel)
+                output[new_x, new_y, channel] = floor(new_pixel)
 
     output = Image.fromarray(cv.cvtColor(output.astype(np.uint8), cv.COLOR_BGR2RGB))  
     return output

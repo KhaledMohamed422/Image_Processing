@@ -28,7 +28,7 @@ class Tab1Frame(ctk.CTkFrame):
         SwitchPanel(self, (tab_vars['grayscale'], 'B/W'), (tab_vars['invert'], 'invert'))
         SwitchPanel(self, (tab_vars['histogram_equalization'], 'Histogram Equalization'))
         SliderPanelWithSteps(self, 'Brightness Offset', tab_vars['brightness'], 0, 100, lambda: process_func('Brightness'), 10)
-        SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 1, 5, lambda: process_func('power_trans')) 
+        SliderPanel(self, 'Power Low gamma', tab_vars['gamma'], 0.1, 5, lambda: process_func('power_trans')) 
         ImageChooserWithDrop(self, tab_vars['image_path'], tab_vars['drop_options'], process_func)
         RevertButton(self, 
                 (tab_vars['grayscale'], False),
@@ -56,7 +56,7 @@ class Tab3Frame(ctk.CTkFrame):
         
         SwitchPanel(self, (tab_vars['edge_det'], 'Edge'),( (tab_vars['Sharp'], 'Sharp')))
         SliderPanelWithSteps(self, 'Smoothing Filter', tab_vars['blur'],1,7,lambda: process_func('blur'),step=3)
-        SliderPanel(self, 'Reduce Size', tab_vars['reduce'],1,7,lambda: process_func('reduce'))
+        SliderPanel(self, 'Reduce Size', tab_vars['reduce'],1,8,lambda: process_func('reduce'))
         RevertButton(self, 
                 (tab_vars['edge_det'], False), 
                 (tab_vars['Sharp'], False), 
